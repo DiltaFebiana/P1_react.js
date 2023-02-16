@@ -1,8 +1,8 @@
-const linkHome = document.getElementById("link-home");
-const linkAbout = document.getElementById("link-about");
-const root = document.getElementById("root");
+const linkHome= document.getElementById("link-home");
+const linkAbout= document.getElementById("link-about");
+const root= document.getElementById("root");
 
-linkHome.onclick = function (event) {
+linkHome.onclick = function(event){
     event.preventDefault();
     const homeScreen = HomeScreen();
     root.innerHTML = "";
@@ -10,24 +10,25 @@ linkHome.onclick = function (event) {
     history.pushState(null, "", event.target.href);
 };
 
-linkAbout.onclick = function (event) {
+linkAbout.onclick = function(event){
     event.preventDefault();
     const aboutScreen = AboutScreen();
     root.innerHTML = "";
     root.append(aboutScreen);
     history.pushState(null, "", event.target.href);
 };
-function AboutScreen() {
+
+function AboutScreen(){
     const text = document.createElement("p");
     text.textContent = "Welcome to About";
     return text;
 }
 
-function HomeScreen(){
+function HomeScreen() {
     const textPreview = document.createElement("p");
 
     const input = document.createElement("input");
-    input.oninput = function(event){
+    input.oninput = function (event){
         textPreview.textContent = event.target.value;
     }
     input.placeholder = "Enter your name";
@@ -39,11 +40,10 @@ function HomeScreen(){
     return div;
 }
 
-if (location.hash == "#about") {
+if (location.hash == "#about"){
     const aboutScreen = AboutScreen();
     root.innerHTML = "";
     root.append(aboutScreen);
-
 } else if (location.hash == "#home"){
     const homeScreen = HomeScreen();
     root.innerHTML = "";
