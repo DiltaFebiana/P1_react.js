@@ -1,18 +1,38 @@
-function Link(props) {
-    const a = document.createElement("a");
-    a.href = props.href;
-    a.textContent = props.label;
-    a.onclick = function (event) {
-      event.preventDefault();
-      history.pushState(null, "", event.target.href);
-      render();
+let state = {
+    inputValue: "",
+    hash: location.hash,
+  };
+  
+  function setState(newState) {
+    state = { ...state, ...newState };
+    render();
+  }
+  
+  function Link(props) {
+    const link = document.createElement("a");
+    link.href = props.href;
+    link.textContent = props.label;
+    link.onclick = function (event) {
+        event.preventDefault();
+        const url = new URL(event.target.href);
+        setState({ hash: url.hash });
+        history.pushState(null, "", event.target.href);
+        render();
     };
-    return a;
+  
+    return link;
   }
   
   function Navbar() {
-    const linkHome = Link({ href: "#home", label: "Home" });
-    const linkAbout = Link({ href: "#about", label: "About" });
+    const linkHome = Link({
+        href: "#home",
+        label: "Home",
+    });
+  
+    const linkAbout = Link({
+        href: "#about",
+        label: "About",
+    });
   
     const div = document.createElement("div");
     div.append(linkHome);
@@ -21,59 +41,79 @@ function Link(props) {
     return div;
   }
   
-  function HomePage() {
+  function HomeScreen() {
     const navbar = Navbar();
   
-    const p = document.createElement("p");
-    p.textContent = "Welcome to Home Page";
-  
-    const textPreview = document.createElement("p");
+    const textPreview = document.createElement('p');
+    textPreview.textContent = state.inputValue;
   
     const input = document.createElement("input");
-    input.placeholder = "enter your name";
+    input.id = "input";
+    input.value = state.inputValue;
     input.oninput = function (event) {
-      textPreview.textContent = event.target.value;
+        setState({ inputValue: event.target.value });
     };
+    input.placeholder = "Enter your name";
+  
+    const buttonClear = document.createElement("button");
+    buttonClear.textContent = "Clear";
+    buttonClear.onclick = function () {
+        setState({ inputValue: "" });
+    }
   
     const div = document.createElement("div");
     div.append(navbar);
-    div.append(p);
     div.append(input);
+    div.append(buttonClear);
     div.append(textPreview);
   
     return div;
   }
   
-  function AboutPage() {
-    const linkHome = Link({ href: "#home", label: "Back to Home" });
+  function AboutScreen() {
+    const linkHome = Link({
+        href: "#home",
+        label: "Kembali ke Home",
+    });
   
-    const p = document.createElement("p");
-    p.textContent = "Welcome to About Page";
+    const text = document.createElement("p");
+    text.textContent = "Welcome to About";
   
     const div = document.createElement("div");
-    div.appendChild(linkHome);
-    div.appendChild(p);
+    div.append(linkHome);
+    div.append(text);
+  
     return div;
   }
   
   function App() {
-    const homePage = HomePage();
-    const aboutPage = AboutPage();
+    const homeScreen = HomeScreen();
+    const aboutScreen = AboutScreen();
   
-    if (window.location.hash == "#home") {
-      return homePage;
-    } else if (window.location.hash == "#about") {
-      return aboutPage;
-    } else {
-      return homePage;
+    if (state.hash == "#about") {
+        return aboutScreen;
+    } else if (state.hash == "#home") {
+        return homeScreen;
     }
   }
   
   function render() {
     const root = document.getElementById("root");
     const app = App();
+  
+    const focusedElementId = document.activeElement.id;
+    const focusedElementSelectionStart = document.activeElement.selectionStart;
+    const focusedElementSelectionEnd = document.activeElement.selectionEnd;
+  
     root.innerHTML = "";
-    root.appendChild(app);
+    root.append(app);
+  
+    if (focusedElementId) {
+        const focusedElement = document.getElementById(focusedElementId);
+        focusedElement.focus();
+        focusedElement.selectionStart = focusedElementSelectionStart;
+        focusedElement.selectionEnd = focusedElementSelectionEnd;
+    }
   }
   
   render();
